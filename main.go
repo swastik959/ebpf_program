@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 	"os"
@@ -42,7 +41,7 @@ func main() {
 	}
 	defer coll.Close()
 
-	prog, ok := coll.Programs["xdp_prog"]
+	prog, ok := coll.Programs["xdp_drop_port"]
 	if !ok {
 		log.Fatal("Cannot find XDP program in collection")
 	}
@@ -64,7 +63,5 @@ func main() {
 	if err := bpfMap.Put(uint32(0), uint32(port)); err != nil {
 		log.Fatalf("Failed to update map: %v", err)
 	}
-
-	fmt.Printf("XDP program successfully attached. Filtering port %d on %s\n", port, iface)
 
 }

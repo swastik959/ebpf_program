@@ -1,3 +1,4 @@
+//go:build ignore
 #include <linux/bpf.h>
 #include <linux/if_ether.h>
 #include <linux/ip.h>
@@ -6,11 +7,11 @@
 #include <bpf_helpers.h> 
 
 struct bpf_map_def {
-      unsigned int type;
-      unsigned int key_size;
-      unsigned int value_size;
-      unsigned int max_entries;
-      unsigned int map_flags;
+    unsigned int type;
+    unsigned int key_size;
+    unsigned int value_size;
+    unsigned int max_entries;
+    unsigned int map_flags;
 };
 
 struct bpf_map_def SEC("maps") port_map = {
@@ -53,15 +54,19 @@ int xdp_drop_port(struct xdp_md *ctx) {
         return XDP_PASS;
     }
 
-    // Retrieve port from map (if it exists)
+    // Retrieve port from map
     __u32 key = 0;
     __u32 *port = bpf_map_lookup_elem(&port_map, &key);
     if (!port) {
-        return XDP_PASS; // No port in map, pass traffic
+        // Error handling: No port in map, pass traffic
+        return XDP_PASS;
     }
 
+    // Convert port to network byte order
+    __u16 port_be = htons(*port);
+
     // Drop if destination port matches
-    if (tcp->dest == htons(*port)) {
+    if (tcp->dest == port_be) {
         return XDP_DROP;
     }
 
