@@ -2,6 +2,16 @@
 #include <linux/if_ether.h>
 #include <linux/ip.h>
 #include <linux/tcp.h>
+#include <netinet/in.h>
+#include <bpf_helpers.h> 
+
+struct bpf_map_def {
+      unsigned int type;
+      unsigned int key_size;
+      unsigned int value_size;
+      unsigned int max_entries;
+      unsigned int map_flags;
+};
 
 struct bpf_map_def SEC("maps") port_map = {
     .type        = BPF_MAP_TYPE_ARRAY,
